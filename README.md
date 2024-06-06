@@ -1,4 +1,4 @@
-# eagle_hub_android
+# Eagle Hub
 
 A new Flutter project.
 
