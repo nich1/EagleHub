@@ -64,7 +64,7 @@ flutter:
     - images/EagleLanding.png
     - images/KitchenWest.png
     - images/MeanGreensCafe.png
-    - i_theme/dark_theme.json
+    - i_theme/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

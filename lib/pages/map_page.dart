@@ -33,12 +33,12 @@ class _MapPageState extends State<MapPage> {
   ];
 
   // Dining Hall Coordinates
-  final List<LatLng> latlngForImages = <LatLng>[
-    const LatLng(33.212082288367114, -97.15037357863325),
-    const LatLng(33.202682616849565, -97.15860238464549),
-    const LatLng(33.20864098158666, -97.1467412364647),
-    const LatLng(33.21177987953803, -97.15555561979893),
-    const LatLng(33.20807004346004, -97.15004990776785),
+  final latlngForImages = [
+    LatLng(33.212082288367114, -97.15037357863325),
+    LatLng(33.202682616849565, -97.15860238464549),
+    LatLng(33.20864098158666, -97.1467412364647),
+    LatLng(33.21177987953803, -97.15555561979893),
+    LatLng(33.20807004346004, -97.15004990776785),
   ];
 
   final List<Marker> myMarker = [];
@@ -74,7 +74,7 @@ class _MapPageState extends State<MapPage> {
     // TODO: implement initState
     super.initState();
     DefaultAssetBundle.of(context)
-        .loadString('i_theme/dark_theme.json')
+        .loadString('i_theme/aubergine_theme.json')
         .then((value) {
       themeForMap = value;
     });
@@ -83,13 +83,24 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Create markers before render map
+    var markers = {
+      Marker(
+          markerId: const MarkerId('1'),
+          position: const LatLng(33.212082288367114, -97.15037357863325),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure))
+    };
+
     return Scaffold(
         body: SafeArea(
             child: GoogleMap(
-                initialCameraPosition: _initialPosition,
-                style: themeForMap,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                })));
+      initialCameraPosition: _initialPosition,
+      style: themeForMap,
+      onMapCreated: (GoogleMapController controller) {
+        _controller.complete(controller);
+      },
+      markers: markers,
+    )));
   }
 }
