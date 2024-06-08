@@ -67,10 +67,17 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  String themeForMap = '';
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    DefaultAssetBundle.of(context)
+        .loadString('i_theme/dark_theme.json')
+        .then((value) {
+      themeForMap = value;
+    });
     packData();
   }
 
@@ -80,6 +87,7 @@ class _MapPageState extends State<MapPage> {
         body: SafeArea(
             child: GoogleMap(
                 initialCameraPosition: _initialPosition,
+                style: themeForMap,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                 })));
