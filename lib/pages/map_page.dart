@@ -37,6 +37,24 @@ List<Map<String, dynamic>> data = [
     'assetPath': 'images/Bruceteria.png',
     'title': 'Mean Greens Cafe',
   },
+  {
+    'id': '5',
+    'position': const LatLng(33.25383264374943, -97.15258098980682),
+    'assetPath': 'images/Bruceteria.png',
+    'title': 'Discovery Perks Market & Grill',
+  },
+  {
+    'id': '5',
+    'position': const LatLng(33.1858457236309, -96.8055832450406),
+    'assetPath': 'images/Bruceteria.png',
+    'title': 'The Spark Markerspace',
+  },
+  {
+    'id': '5',
+    'position': const LatLng(32.65962759202431, -96.80359387372236),
+    'assetPath': 'images/Bruceteria.png',
+    'title': 'Jag Cafe',
+  },
 ];
 
 class MapPage extends StatefulWidget {
