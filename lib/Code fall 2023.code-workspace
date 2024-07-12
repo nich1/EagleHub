@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "../../../../School/Code fall 2023"
+		},
+		{
+			"path": "../../../../Spring 24"
+		},
+		{
+			"path": "../../../../HTML practice"
+		},
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"ostream": "cpp",
+			"iostream": "cpp",
+			"chrono": "cpp",
+			"bitset": "cpp",
+			"algorithm": "cpp",
+			"fstream": "cpp"
+		}
+	}
+}

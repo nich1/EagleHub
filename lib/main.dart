@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "look.dart";
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Eagle Hub',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
@@ -20,22 +22,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,9 +45,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to filter options
+                      // Navigate to LookPage (or any other page)
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LookPage()),
+                      );
                     },
-                    child: const Text('Filter Meals'),
+                    child: const Text('Search Meals'),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -99,10 +100,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Handle notification button press
+          // Handle maps button press
         },
         tooltip: 'Notifications',
-        child: const Icon(Icons.notifications),
+        child: const Icon(Icons.map),
       ),
     );
   }
