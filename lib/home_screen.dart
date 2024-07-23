@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'maps_screen.dart';
-import 'more_screen.dart';
-import 'dining_details_screen.dart';
+import 'notifications_screen.dart';  // Renamed MoreScreen to NotificationsScreen
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final DateTime now = DateTime.now();
-  final DateFormat timeFormat = DateFormat('h a'); // Updated to match time format
+  final DateFormat timeFormat = DateFormat('h a');
 
   bool isOpen(String openingTime, String closingTime) {
     try {
@@ -27,40 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildStatus(String name, String openingHours) {
-    final hours = openingHours.split('\n');
-    bool open = false;
-    bool closedForSummer = openingHours.contains('Closed for the summer.');
-
-    for (String hour in hours) {
-      if (hour.contains('—')) {
-        final times = hour.split('—');
-        final start = times[0].trim();
-        final end = times[1].trim();
-
-        if (isOpen(start, end)) {
-          open = true;
-          break;
-        }
-      }
-    }
-
-    return Row(
-      children: [
-        Icon(
-          Icons.access_time,
-          size: 12,
-          color: open ? Colors.green : Colors.red,
-        ),
-        SizedBox(width: 5),
-        Text(
-          closedForSummer ? 'Closed for the summer.' : (open ? 'Open' : 'Closed'),
-          style: TextStyle(
-            fontSize: 12,
-            color: closedForSummer ? Colors.red : (open ? Colors.green : Colors.red),
-          ),
-        ),
-      ],
+  void _showNotifications() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => NotificationsScreen(),
+      ),
     );
   }
 
@@ -70,6 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,17 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('UNT Dining Services'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: Icon(Icons.search),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('Filter'),
-                  content: Text('Filter implementation will be here.'),
+                  title: Text('Search'),
+                  content: Text('Search functionality will be here.'),
                 ),
               );
             },
           ),
+          // Removed bell icon from AppBar
         ],
       ),
       body: IndexedStack(
@@ -105,11 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.restaurant),
-                  title: Text('DISCOVERY PERKS MARKET & GRILL'),
-                  subtitle: _buildStatus('DISCOVERY PERKS MARKET & GRILL', 'Closed for the summer.'),
-                ),
+                _buildDiningTab('DISCOVERY PERKS MARKET & GRILL', 'https://dining.unt.edu/portfolio-item/discovery-perks/', 'Click to view menu'),
                 Container(
                   color: Colors.green[900],
                   padding: EdgeInsets.all(8.0),
@@ -118,11 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.restaurant),
-                  title: Text('THE MARKET AT FRISCO LANDING'),
-                  subtitle: _buildStatus('THE MARKET AT FRISCO LANDING', 'Closed for the summer.'),
-                ),
+                _buildDiningTab('THE MARKET AT FRISCO LANDING', 'https://dining.unt.edu/portfolio-item/the-market-at-frisco-landing/', 'Click to view menu'),
                 Container(
                   color: Colors.green[900],
                   padding: EdgeInsets.all(8.0),
@@ -134,49 +106,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ListTile(
-                      leading: Icon(Icons.restaurant),
-                      title: Text('CHAMPS'),
-                      subtitle: _buildStatus('CHAMPS', 'Closed for the summer.'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.restaurant),
-                      title: Text('EAGLE LANDING'),
-                      subtitle: _buildStatus('EAGLE LANDING', 'Closed for the summer.'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.restaurant),
-                      title: Text('KITCHEN WEST'),
-                      subtitle: _buildStatus('KITCHEN WEST', 'Closed for the summer.'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.restaurant),
-                      title: Text('MEAN GREENS CAFÉ'),
-                      subtitle: _buildStatus('MEAN GREENS CAFÉ', 'Closed for the summer.'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.restaurant),
-                      title: Text('BRUCETERIA'),
-                      subtitle: _buildStatus('BRUCETERIA', 'Monday - Sunday\n7 a.m. — 10 a.m.\n11 a.m. — 2 p.m.\n4:30 p.m. — 7 p.m.'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => BruceteriaDetailsScreen()),
-                        );
-                      },
-                    ),
+                    _buildDiningTab('CHAMPS', 'https://diningmenus.unt.edu/?locationID=15', 'Click to view menu'),
+                    _buildDiningTab('EAGLE LANDING', 'https://diningmenus.unt.edu/?locationID=31', 'Click to view menu'),
+                    _buildDiningTab('KITCHEN WEST', 'https://diningmenus.unt.edu/?locationID=25', 'Click to view menu'),
+                    _buildDiningTab('MEAN GREENS CAFÉ', 'https://diningmenus.unt.edu/?locationID=10', 'Click to view menu'),
+                    _buildDiningTab('BRUCETERIA', 'https://diningmenus.unt.edu/?locationID=20', 'Click to view menu'),
+                    _buildDiningTab('EINSTEIN BROS. BAGELS', 'https://dining.unt.edu/portfolio-item/einstein-bros-bagels/', 'Click to view menu'),
+                    _buildDiningTab('STARBUCKS COFFEE STAND', 'https://dining.unt.edu/portfolio-item/starbucks-coffee-stand/', 'Click to view menu'),
+                    _buildDiningTab('THE MARKET BY CLARK BAKERY', 'https://dining.unt.edu/portfolio-item/the-market/', 'Click to view menu'),
+                    _buildDiningTab('WHICH WICH', 'https://dining.unt.edu/portfolio-item/which-wich/', 'Click to view menu'),
+                    _buildDiningTab('AVESTA', 'https://diningmenus.unt.edu/?locationID=30', 'Click to view menu'),
+                    _buildDiningTab('BURGER KING', 'https://dining.unt.edu/portfolio-item/burger-king/', 'Click to view menu'),
+                    _buildDiningTab('CAMPUS CHAT FOOD COURT', 'https://dining.unt.edu/portfolio-item/the-campus-chat-food-court/', 'Click to view menu'),
+                    _buildDiningTab('CHICK-FIL-A', 'https://dining.unt.edu/portfolio-item/chick-fil-a/', 'Click to view menu'),
+                    _buildDiningTab('FOOD-TO-GO PANTRY', 'https://dining.unt.edu/portfolio-item/food-to-go-pantry/', 'Click to view menu'),
+                    _buildDiningTab('FUZZY\'S TACO SHOP', 'https://dining.unt.edu/portfolio-item/fuzzys-taco-shop/', 'Click to view menu'),
+                    _buildDiningTab('JAMBA', 'https://dining.unt.edu/portfolio-item/jamba/', 'Click to view menu'),
+                    _buildDiningTab('KRISPY KRUNCHY CHICKEN', 'https://dining.unt.edu/portfolio-item/krispy-krunchy-chicken/', 'Click to view menu'),
+                    _buildDiningTab('STARBUCKS', 'https://dining.unt.edu/portfolio-item/starbucks/', 'Click to view menu'),
+                    _buildDiningTab('VERDE EVERYDAY EXPRESS', 'https://dining.unt.edu/portfolio-item/verde-everyday-express/', 'Click to view menu'),
                   ],
                 ),
               ],
             ),
           ),
           MapsScreen(),
-          MoreScreen(),
+          NotificationsScreen(),  // Changed to NotificationsScreen
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        selectedItemColor: Colors.green[900],
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant_menu),
@@ -187,86 +148,55 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.more_vert),
-            label: 'More',
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
           ),
         ],
       ),
     );
   }
-}
 
-class BruceteriaDetailsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('BRUCETERIA'),
+  Widget _buildDiningTab(String title, String url, String subtitle) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
-      body: DefaultTabController(
-        length: 3,
-        child: Column(
-          children: [
-            TabBar(
-              tabs: [
-                Tab(text: 'BREAKFAST'),
-                Tab(text: 'LUNCH'),
-                Tab(text: 'DINNER'),
-              ],
-              indicatorColor: Colors.green[900],
-              labelColor: Colors.green[900],
-              unselectedLabelColor: Colors.black,
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  BreakfastMenu(),
-                  Center(child: Text('LUNCH Menu')),
-                  Center(child: Text('DINNER Menu')),
-                ],
-              ),
-            ),
-          ],
-        ),
+      child: ListTile(
+        leading: Icon(Icons.restaurant),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        onTap: () {
+          _launchUrl(url);
+        },
       ),
     );
   }
 }
 
-class BreakfastMenu extends StatelessWidget {
+class NotificationsScreen extends StatelessWidget {  // Renamed from MoreScreen to NotificationsScreen
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.lightGreen[50],
-      child: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          Text('100% Plant-based Tofu Hash', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Assorted Breakfast Pastries', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Brown Sugar Oatmeal', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Clark Bakery Biscuits', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Crustless Quiche with Bacon', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('French Toast', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Fried Potatoes', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Ham Scramble', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Hard Boiled Eggs', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Maple Syrup', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Roasted Jalapeno Sausage', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Scrambled Eggs', style: TextStyle(fontSize: 18)),
-          SizedBox(height: 10),
-          Text('Sizzling Sausage Links', style: TextStyle(fontSize: 18)),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Notifications'),
+      ),
+      body: Center(
+        child: Text(
+          'NO NOTIFICATIONS',
+          style: TextStyle(fontSize: 24),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -289,3 +219,5 @@ class MapsScreen extends StatelessWidget {
     );
   }
 }
+
+

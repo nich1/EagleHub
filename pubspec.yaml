@@ -10,8 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.0 # Add this line to include the intl package
+  intl: ^0.18.0
   cupertino_icons: ^1.0.6
+  url_launcher: ^6.1.7 # Add this line to include the url_launcher package
 
 dev_dependencies:
   flutter_test:
